@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: diary-gateway
+  profiles:
+    active: local
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: diary-system-service
+              uri: lb://diary-system-service
+              predicates:
+                - Path=/admin-api/system/**
+            - id: diary-file-service
+              uri: lb://diary-file-service
+              predicates:
+                - Path=/admin-api/file/**
+            - id: diary-diary-service
+              uri: lb://diary-diary-service
+              predicates:
+                - Path=/admin-api/diary/**
+            - id: diary-blog-service
+              uri: lb://diary-blog-service
+              predicates:
+                - Path=/admin-api/blog/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics

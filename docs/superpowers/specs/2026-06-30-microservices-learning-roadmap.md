@@ -243,6 +243,7 @@
 | --- | --- | --- | --- | --- |
 | 2026-06-30 | 规划 | 创建微服务改造学习路线文档 | 文档已创建 | 后续按本文档推进 |
 | 2026-06-30 | 第一阶段 | 加入微服务上下文透传组件 | `mvn -pl diary-framework/diary-spring-boot-starter-cloud -am test` 通过，4 个测试通过 | 已覆盖 traceId 过滤器和 Feign 请求头透传 |
+| 2026-06-30 | 第一阶段 | 加入 Gateway 骨架和 traceId 过滤器 | `mvn "-Dmaven.repo.local=..\.m2\repository" -pl diary-gateway -am test` 通过，2 个测试通过 | Gateway 已具备 Nacos/Gateway/Sentinel/JWT 依赖和标准路由配置 |
 
 ## 后续推进规则
 
