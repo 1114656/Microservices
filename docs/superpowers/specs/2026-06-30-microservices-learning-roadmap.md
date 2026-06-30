@@ -245,6 +245,7 @@
 | 2026-06-30 | 第一阶段 | 加入微服务上下文透传组件 | `mvn -pl diary-framework/diary-spring-boot-starter-cloud -am test` 通过，4 个测试通过 | 已覆盖 traceId 过滤器和 Feign 请求头透传 |
 | 2026-06-30 | 第一阶段 | 加入 Gateway 骨架和 traceId 过滤器 | `mvn "-Dmaven.repo.local=..\.m2\repository" -pl diary-gateway -am test` 通过，2 个测试通过 | Gateway 已具备 Nacos/Gateway/Sentinel/JWT 依赖和标准路由配置 |
 | 2026-06-30 | 第一阶段 | 拆出四个业务服务启动入口 | `mvn "-Dmaven.repo.local=..\.m2\repository" -pl diary-module-system,diary-module-file,diary-module-diary,diary-module-blog -am test -DskipTests` 通过 | system/file/diary/blog 已具备独立 Spring Boot 启动类、服务名和端口配置 |
+| 2026-06-30 | 第一阶段 | 加入 Docker Compose 编排骨架 | 当前环境缺少 Docker 与 YAML 解析器，未能运行 `docker compose config` | 已加入 MySQL、Redis、MinIO、Nacos、Sentinel、RocketMQ、Gateway 和业务服务容器定义，后续需在 Docker 环境复验 |
 
 ## 后续推进规则
 

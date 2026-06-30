@@ -1,0 +1,217 @@
+name: diary-microservices
+
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: diary-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: diary_root_pwd
+      TZ: Asia/Shanghai
+    ports:
+      - "3306:3306"
+    volumes:
+      - diary-mysql-data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d:ro
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -uroot -pdiary_root_pwd --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7.4
+    container_name: diary-redis
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "diary_redis_pwd"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - diary-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "diary_redis_pwd", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  minio:
+    image: minio/minio:RELEASE.2025-05-24T17-08-30Z
+    container_name: diary-minio
+    environment:
+      MINIO_ROOT_USER: diary_minio
+      MINIO_ROOT_PASSWORD: diary_minio_pwd
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - diary-minio-data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  nacos:
+    image: nacos/nacos-server:v3.0.3
+    container_name: diary-nacos
+    environment:
+      MODE: standalone
+      NACOS_AUTH_ENABLE: "false"
+      JVM_XMS: 256m
+      JVM_XMX: 512m
+      JVM_XMN: 128m
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+    volumes:
+      - diary-nacos-data:/home/nacos/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8848/nacos/actuator/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 30
+
+  sentinel:
+    image: bladex/sentinel-dashboard:1.8.8
+    container_name: diary-sentinel
+    ports:
+      - "8080:8858"
+    environment:
+      JAVA_OPTS: "-Dserver.port=8858 -Dcsp.sentinel.dashboard.server=localhost:8858"
+
+  rocketmq-namesrv:
+    image: apache/rocketmq:5.3.2
+    container_name: diary-rocketmq-namesrv
+    command: sh mqnamesrv
+    ports:
+      - "9876:9876"
+    volumes:
+      - diary-rocketmq-namesrv-logs:/home/rocketmq/logs
+
+  rocketmq-broker:
+    image: apache/rocketmq:5.3.2
+    container_name: diary-rocketmq-broker
+    depends_on:
+      - rocketmq-namesrv
+    environment:
+      NAMESRV_ADDR: rocketmq-namesrv:9876
+    command: sh mqbroker -n rocketmq-namesrv:9876
+    ports:
+      - "10911:10911"
+      - "10909:10909"
+    volumes:
+      - diary-rocketmq-broker-logs:/home/rocketmq/logs
+      - diary-rocketmq-broker-store:/home/rocketmq/store
+
+  diary-gateway:
+    build:
+      context: ..
+      dockerfile: infra/docker/backend-service.Dockerfile
+      args:
+        JAR_FILE: diary-backend/diary-gateway/target/diary-gateway.jar
+    container_name: diary-gateway
+    environment:
+      NACOS_ADDR: nacos:8848
+      JAVA_OPTS: "-Xms256m -Xmx512m"
+    ports:
+      - "48080:48080"
+    depends_on:
+      - nacos
+      - sentinel
+
+  diary-system-service:
+    build:
+      context: ..
+      dockerfile: infra/docker/backend-service.Dockerfile
+      args:
+        JAR_FILE: diary-backend/diary-module-system/target/diary-module-system.jar
+    container_name: diary-system-service
+    environment:
+      SERVER_PORT: 48081
+      NACOS_ADDR: nacos:8848
+      MYSQL_HOST: mysql
+      REDIS_HOST: redis
+      ROCKETMQ_NAMESRV_ADDR: rocketmq-namesrv:9876
+      JAVA_OPTS: "-Xms256m -Xmx512m"
+    ports:
+      - "48081:48081"
+    depends_on:
+      - mysql
+      - redis
+      - nacos
+      - rocketmq-broker
+
+  diary-file-service:
+    build:
+      context: ..
+      dockerfile: infra/docker/backend-service.Dockerfile
+      args:
+        JAR_FILE: diary-backend/diary-module-file/target/diary-module-file.jar
+    container_name: diary-file-service
+    environment:
+      SERVER_PORT: 48082
+      NACOS_ADDR: nacos:8848
+      MYSQL_HOST: mysql
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ACCESS_KEY: diary_minio
+      MINIO_SECRET_KEY: diary_minio_pwd
+      ROCKETMQ_NAMESRV_ADDR: rocketmq-namesrv:9876
+      JAVA_OPTS: "-Xms256m -Xmx512m"
+    ports:
+      - "48082:48082"
+    depends_on:
+      - mysql
+      - minio
+      - nacos
+      - rocketmq-broker
+
+  diary-diary-service:
+    build:
+      context: ..
+      dockerfile: infra/docker/backend-service.Dockerfile
+      args:
+        JAR_FILE: diary-backend/diary-module-diary/target/diary-module-diary.jar
+    container_name: diary-diary-service
+    environment:
+      SERVER_PORT: 48083
+      NACOS_ADDR: nacos:8848
+      MYSQL_HOST: mysql
+      ROCKETMQ_NAMESRV_ADDR: rocketmq-namesrv:9876
+      JAVA_OPTS: "-Xms256m -Xmx512m"
+    ports:
+      - "48083:48083"
+    depends_on:
+      - mysql
+      - nacos
+      - rocketmq-broker
+
+  diary-blog-service:
+    build:
+      context: ..
+      dockerfile: infra/docker/backend-service.Dockerfile
+      args:
+        JAR_FILE: diary-backend/diary-module-blog/target/diary-module-blog.jar
+    container_name: diary-blog-service
+    environment:
+      SERVER_PORT: 48084
+      NACOS_ADDR: nacos:8848
+      MYSQL_HOST: mysql
+      ROCKETMQ_NAMESRV_ADDR: rocketmq-namesrv:9876
+      JAVA_OPTS: "-Xms256m -Xmx512m"
+    ports:
+      - "48084:48084"
+    depends_on:
+      - mysql
+      - nacos
+      - rocketmq-broker
+
+volumes:
+  diary-mysql-data:
+  diary-redis-data:
+  diary-minio-data:
+  diary-nacos-data:
+  diary-rocketmq-namesrv-logs:
+  diary-rocketmq-broker-logs:
+  diary-rocketmq-broker-store:
