@@ -1,0 +1,29 @@
+# IDE
+.idea/
+.vscode/
+
+# Java / Maven
+target/
+*.class
+.flattened-pom.xml
+
+# Node / Vite
+node_modules/
+dist/
+.vite-codex.log
+
+# Logs and local runtime output
+tmp-run-logs/
+logs/
+*.log
+
+# Local secrets and machine-specific environment files
+diary-backend/**/application-local.yaml
+diary-backend/**/application-dev.yaml
+diary-vue/.env
+diary-vue/.env.local
+diary-vue/.env.*.local
+
+# OS
+Thumbs.db
+.DS_Store
