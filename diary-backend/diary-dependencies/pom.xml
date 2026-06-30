@@ -182,6 +182,12 @@
 
             <dependency>
                 <groupId>cn.iocoder.boot</groupId>
+                <artifactId>diary-spring-boot-starter-cloud</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.iocoder.boot</groupId>
                 <artifactId>diary-spring-boot-starter-security</artifactId>
                 <version>${revision}</version>
             </dependency>
