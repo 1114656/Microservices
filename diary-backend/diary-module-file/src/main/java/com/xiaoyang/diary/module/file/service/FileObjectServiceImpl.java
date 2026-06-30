@@ -10,8 +10,10 @@ import com.xiaoyang.diary.module.file.enums.FileCategoryEnum;
 import com.xiaoyang.diary.module.file.enums.FileObjectStatusEnum;
 import com.xiaoyang.diary.module.file.enums.FileVisibilityEnum;
 import com.xiaoyang.diary.module.file.framework.config.FileStorageProperties;
+import com.xiaoyang.diary.module.file.service.event.FileOutboxEventService;
 import com.xiaoyang.diary.module.file.service.storage.FileStorageService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,6 +45,7 @@ public class FileObjectServiceImpl implements FileObjectService {
     private final FileObjectMapper fileObjectMapper;
     private final FileCategoryDetector fileCategoryDetector;
     private final FileStorageProperties fileStorageProperties;
+    private final FileOutboxEventService fileOutboxEventService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -76,6 +79,8 @@ public class FileObjectServiceImpl implements FileObjectService {
                 .status(FileObjectStatusEnum.NORMAL.getStatus())
                 .build();
         fileObjectMapper.insert(fileObject);
+        fileOutboxEventService.createFileUploadedEvent(fileObject.getId(), ownerUserId, originalName,
+                category.getCategory(), MDC.get("traceId"));
         return fileObject;
     }
 

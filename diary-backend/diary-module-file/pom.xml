@@ -41,6 +41,10 @@
             <artifactId>diary-spring-boot-starter-cloud</artifactId>
         </dependency>
         <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>diary-spring-boot-starter-mq</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>

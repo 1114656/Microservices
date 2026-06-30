@@ -177,6 +177,7 @@ services:
       - "48082:48082"
     depends_on:
       - mysql
+      - redis
       - minio
       - nacos
       - rocketmq-broker

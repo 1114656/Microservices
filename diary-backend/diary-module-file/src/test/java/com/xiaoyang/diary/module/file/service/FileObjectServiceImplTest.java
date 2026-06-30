@@ -7,6 +7,7 @@ import com.xiaoyang.diary.module.file.dal.dataobject.FileObjectDO;
 import com.xiaoyang.diary.module.file.dal.mysql.FileObjectMapper;
 import com.xiaoyang.diary.module.file.enums.FileCategoryEnum;
 import com.xiaoyang.diary.module.file.framework.config.FileStorageProperties;
+import com.xiaoyang.diary.module.file.service.event.FileOutboxEventService;
 import com.xiaoyang.diary.module.file.service.storage.FileStorageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,8 @@ class FileObjectServiceImplTest extends BaseMockitoUnitTest {
     private FileStorageService fileStorageService;
     @Mock
     private FileObjectMapper fileObjectMapper;
+    @Mock
+    private FileOutboxEventService fileOutboxEventService;
 
     private FileObjectServiceImpl fileObjectService;
 
@@ -41,7 +44,7 @@ class FileObjectServiceImplTest extends BaseMockitoUnitTest {
         FileStorageProperties properties = new FileStorageProperties();
         properties.getS3().setBucket("diary-file");
         fileObjectService = new FileObjectServiceImpl(fileStorageService, fileObjectMapper,
-                new FileCategoryDetector(), properties);
+                new FileCategoryDetector(), properties, fileOutboxEventService);
     }
 
     @Test
@@ -80,6 +83,7 @@ class FileObjectServiceImplTest extends BaseMockitoUnitTest {
         assertEquals("100", metadata.getBusinessId());
         assertTrue(metadata.getPreviewSupported());
         assertEquals(10L, result.getId());
+        verify(fileOutboxEventService).createFileUploadedEvent(10L, 1L, "voice.mp3", "audio", null);
     }
 
     @Test

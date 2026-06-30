@@ -17,6 +17,7 @@
         <module>diary-spring-boot-starter-security</module>
         <module>diary-spring-boot-starter-protection</module>
         <module>diary-spring-boot-starter-cloud</module>
+        <module>diary-spring-boot-starter-mq</module>
 
         <module>diary-spring-boot-starter-test</module>
     </modules>

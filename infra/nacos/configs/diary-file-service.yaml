@@ -35,4 +35,18 @@ diary:
       region: us-east-1
       path-style-access-enabled: true
       preview-url-expire: 30m
+  mq:
+    idempotent-ttl: ${MQ_IDEMPOTENT_TTL:7d}
+    outbox:
+      enabled: ${MQ_OUTBOX_ENABLED:true}
+      fixed-delay: ${MQ_OUTBOX_FIXED_DELAY:5000}
+    consumer:
+      file-uploaded:
+        enabled: ${MQ_FILE_UPLOADED_CONSUMER_ENABLED:true}
 
+rocketmq:
+  name-server: ${ROCKETMQ_NAMESRV_ADDR:rocketmq-namesrv:9876}
+  producer:
+    group: ${ROCKETMQ_PRODUCER_GROUP:diary-file-producer}
+  consumer:
+    group: ${ROCKETMQ_CONSUMER_GROUP:diary-file-consumer}
