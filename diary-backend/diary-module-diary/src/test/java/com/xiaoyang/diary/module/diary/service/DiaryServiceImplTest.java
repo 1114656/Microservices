@@ -12,8 +12,7 @@ import com.xiaoyang.diary.module.diary.dal.dataobject.DiaryFileDO;
 import com.xiaoyang.diary.module.diary.dal.mysql.DiaryCategoryMapper;
 import com.xiaoyang.diary.module.diary.dal.mysql.DiaryEntryMapper;
 import com.xiaoyang.diary.module.diary.dal.mysql.DiaryFileMapper;
-import com.xiaoyang.diary.module.file.dal.dataobject.FileObjectDO;
-import com.xiaoyang.diary.module.file.service.FileObjectService;
+import com.xiaoyang.diary.module.file.api.FileObjectApi;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -22,6 +21,7 @@ import org.mockito.Mock;
 import java.util.Collection;
 import java.util.List;
 
+import static com.xiaoyang.diary.framework.common.pojo.CommonResult.success;
 import static com.xiaoyang.diary.module.diary.enums.ErrorCodeConstants.DIARY_CATEGORY_NOT_EXISTS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -41,13 +41,13 @@ class DiaryServiceImplTest extends BaseMockitoUnitTest {
     @Mock
     private DiaryCategoryMapper diaryCategoryMapper;
     @Mock
-    private FileObjectService fileObjectService;
+    private FileObjectApi fileObjectApi;
 
     private DiaryServiceImpl diaryService;
 
     @BeforeEach
     void setUp() {
-        diaryService = new DiaryServiceImpl(diaryEntryMapper, diaryFileMapper, diaryCategoryMapper, fileObjectService,
+        diaryService = new DiaryServiceImpl(diaryEntryMapper, diaryFileMapper, diaryCategoryMapper, fileObjectApi,
                 new DiaryContentBlockService(new ObjectMapper()));
     }
 
@@ -65,8 +65,8 @@ class DiaryServiceImplTest extends BaseMockitoUnitTest {
         ));
         when(diaryCategoryMapper.selectById(10L)).thenReturn(DiaryCategoryDO.builder()
                 .id(10L).ownerUserId(1L).status(1).build());
-        when(fileObjectService.getFile(10L, 1L)).thenReturn(FileObjectDO.builder().id(10L).build());
-        when(fileObjectService.getFile(20L, 1L)).thenReturn(FileObjectDO.builder().id(20L).build());
+        when(fileObjectApi.validateOwnerFile(10L, 1L)).thenReturn(success(true));
+        when(fileObjectApi.validateOwnerFile(20L, 1L)).thenReturn(success(true));
         when(diaryEntryMapper.insert(any(DiaryEntryDO.class))).thenAnswer(invocation -> {
             DiaryEntryDO diary = invocation.getArgument(0);
             diary.setId(100L);
@@ -77,8 +77,8 @@ class DiaryServiceImplTest extends BaseMockitoUnitTest {
         Long diaryId = diaryService.createDiary(reqVO, 1L);
 
         assertEquals(100L, diaryId);
-        verify(fileObjectService).getFile(10L, 1L);
-        verify(fileObjectService).getFile(20L, 1L);
+        verify(fileObjectApi).validateOwnerFile(10L, 1L);
+        verify(fileObjectApi).validateOwnerFile(20L, 1L);
 
         ArgumentCaptor<DiaryEntryDO> diaryCaptor = ArgumentCaptor.forClass(DiaryEntryDO.class);
         verify(diaryEntryMapper).insert(diaryCaptor.capture());

@@ -12,7 +12,7 @@ import com.xiaoyang.diary.module.diary.dal.dataobject.DiaryFileDO;
 import com.xiaoyang.diary.module.diary.dal.mysql.DiaryCategoryMapper;
 import com.xiaoyang.diary.module.diary.dal.mysql.DiaryEntryMapper;
 import com.xiaoyang.diary.module.diary.dal.mysql.DiaryFileMapper;
-import com.xiaoyang.diary.module.file.service.FileObjectService;
+import com.xiaoyang.diary.module.file.api.FileObjectApi;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +38,7 @@ public class DiaryServiceImpl implements DiaryService {
     private final DiaryEntryMapper diaryEntryMapper;
     private final DiaryFileMapper diaryFileMapper;
     private final DiaryCategoryMapper diaryCategoryMapper;
-    private final FileObjectService fileObjectService;
+    private final FileObjectApi fileObjectApi;
     private final DiaryContentBlockService contentBlockService;
 
     @Override
@@ -110,7 +110,7 @@ public class DiaryServiceImpl implements DiaryService {
 
     private void validateFiles(List<DiaryContentBlockReqVO> blocks, Long ownerUserId) {
         contentBlockService.extractFileReferences(blocks)
-                .forEach(reference -> fileObjectService.getFile(reference.fileId(), ownerUserId));
+                .forEach(reference -> fileObjectApi.validateOwnerFile(reference.fileId(), ownerUserId).getCheckedData());
     }
 
     private void validateCategory(Long categoryId, Long ownerUserId) {

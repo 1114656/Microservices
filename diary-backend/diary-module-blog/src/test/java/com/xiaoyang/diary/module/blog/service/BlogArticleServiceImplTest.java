@@ -6,8 +6,7 @@ import com.xiaoyang.diary.module.blog.controller.admin.vo.BlogArticlePageReqVO;
 import com.xiaoyang.diary.module.blog.controller.admin.vo.BlogArticleSaveReqVO;
 import com.xiaoyang.diary.module.blog.dal.dataobject.BlogArticleDO;
 import com.xiaoyang.diary.module.blog.dal.mysql.BlogArticleMapper;
-import com.xiaoyang.diary.module.file.dal.dataobject.FileObjectDO;
-import com.xiaoyang.diary.module.file.service.FileObjectService;
+import com.xiaoyang.diary.module.file.api.FileObjectApi;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -15,6 +14,7 @@ import org.mockito.Mock;
 
 import java.util.List;
 
+import static com.xiaoyang.diary.framework.common.pojo.CommonResult.success;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -27,13 +27,13 @@ class BlogArticleServiceImplTest extends BaseMockitoUnitTest {
     @Mock
     private BlogArticleMapper blogArticleMapper;
     @Mock
-    private FileObjectService fileObjectService;
+    private FileObjectApi fileObjectApi;
 
     private BlogArticleServiceImpl blogArticleService;
 
     @BeforeEach
     void setUp() {
-        blogArticleService = new BlogArticleServiceImpl(blogArticleMapper, fileObjectService);
+        blogArticleService = new BlogArticleServiceImpl(blogArticleMapper, fileObjectApi);
     }
 
     @Test
@@ -52,7 +52,7 @@ class BlogArticleServiceImplTest extends BaseMockitoUnitTest {
         reqVO.setTitle("Upload API");
         reqVO.setContentMarkdown(markdown);
         reqVO.setCoverFileId(10L);
-        when(fileObjectService.getFile(10L, 1L)).thenReturn(FileObjectDO.builder().id(10L).build());
+        when(fileObjectApi.validateOwnerFile(10L, 1L)).thenReturn(success(true));
         when(blogArticleMapper.insert(any(BlogArticleDO.class))).thenAnswer(invocation -> {
             BlogArticleDO article = invocation.getArgument(0);
             article.setId(100L);
@@ -62,7 +62,7 @@ class BlogArticleServiceImplTest extends BaseMockitoUnitTest {
         Long articleId = blogArticleService.createArticle(reqVO, 1L);
 
         assertEquals(100L, articleId);
-        verify(fileObjectService).getFile(10L, 1L);
+        verify(fileObjectApi).validateOwnerFile(10L, 1L);
         ArgumentCaptor<BlogArticleDO> articleCaptor = ArgumentCaptor.forClass(BlogArticleDO.class);
         verify(blogArticleMapper).insert(articleCaptor.capture());
         BlogArticleDO article = articleCaptor.getValue();

@@ -6,7 +6,7 @@ import com.xiaoyang.diary.module.blog.controller.admin.vo.BlogArticlePageReqVO;
 import com.xiaoyang.diary.module.blog.controller.admin.vo.BlogArticleSaveReqVO;
 import com.xiaoyang.diary.module.blog.dal.dataobject.BlogArticleDO;
 import com.xiaoyang.diary.module.blog.dal.mysql.BlogArticleMapper;
-import com.xiaoyang.diary.module.file.service.FileObjectService;
+import com.xiaoyang.diary.module.file.api.FileObjectApi;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +27,7 @@ public class BlogArticleServiceImpl implements BlogArticleService {
     private static final int SUMMARY_MAX_LENGTH = 200;
 
     private final BlogArticleMapper blogArticleMapper;
-    private final FileObjectService fileObjectService;
+    private final FileObjectApi fileObjectApi;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -91,7 +91,7 @@ public class BlogArticleServiceImpl implements BlogArticleService {
 
     private void validateCoverFile(Long coverFileId, Long ownerUserId) {
         if (coverFileId != null) {
-            fileObjectService.getFile(coverFileId, ownerUserId);
+            fileObjectApi.validateOwnerFile(coverFileId, ownerUserId).getCheckedData();
         }
     }
 

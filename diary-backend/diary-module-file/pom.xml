@@ -17,6 +17,11 @@
     <dependencies>
         <dependency>
             <groupId>cn.iocoder.boot</groupId>
+            <artifactId>diary-module-file-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
             <artifactId>diary-spring-boot-starter-security</artifactId>
         </dependency>
         <dependency>
