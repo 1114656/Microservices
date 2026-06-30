@@ -1,0 +1,23 @@
+server:
+  port: ${SERVER_PORT:48083}
+
+spring:
+  datasource:
+    dynamic:
+      primary: master
+      datasource:
+        master:
+          url: jdbc:mysql://${MYSQL_HOST:mysql}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:diary_diary}?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true
+          username: ${MYSQL_USERNAME:diary_diary}
+          password: ${MYSQL_PASSWORD:diary_diary_pwd}
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+      database: ${REDIS_DATABASE:3}
+      password: ${REDIS_PASSWORD:diary_redis_pwd}
+  cloud:
+    sentinel:
+      transport:
+        dashboard: ${SENTINEL_DASHBOARD:sentinel:8858}
+

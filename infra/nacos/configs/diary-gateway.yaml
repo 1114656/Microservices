@@ -1,0 +1,35 @@
+server:
+  port: ${SERVER_PORT:48080}
+
+spring:
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+      database: ${REDIS_DATABASE:3}
+      password: ${REDIS_PASSWORD:diary_redis_pwd}
+  cloud:
+    sentinel:
+      transport:
+        dashboard: ${SENTINEL_DASHBOARD:sentinel:8858}
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: diary-system-service
+              uri: lb://diary-system-service
+              predicates:
+                - Path=/admin-api/system/**
+            - id: diary-file-service
+              uri: lb://diary-file-service
+              predicates:
+                - Path=/admin-api/file/**
+            - id: diary-diary-service
+              uri: lb://diary-diary-service
+              predicates:
+                - Path=/admin-api/diary/**
+            - id: diary-blog-service
+              uri: lb://diary-blog-service
+              predicates:
+                - Path=/admin-api/blog/**
+

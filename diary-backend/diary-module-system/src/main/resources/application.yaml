@@ -1,6 +1,45 @@
 spring:
   application:
     name: diary-system-service
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
+  config:
+    import:
+      - optional:nacos:diary-common.yaml?group=${NACOS_GROUP:DIARY_GROUP}
+      - optional:nacos:${spring.application.name}.yaml?group=${NACOS_GROUP:DIARY_GROUP}
+  main:
+    allow-circular-references: true
+  datasource:
+    dynamic:
+      primary: master
+      datasource:
+        master:
+          url: jdbc:mysql://${MYSQL_HOST:127.0.0.1}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:diary_system}?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true
+          username: ${MYSQL_USERNAME:diary_system}
+          password: ${MYSQL_PASSWORD:diary_system_pwd}
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
+      database: ${REDIS_DATABASE:3}
+      password: ${REDIS_PASSWORD:}
+      repositories:
+        enabled: false
+  cloud:
+    nacos:
+      server-addr: ${NACOS_ADDR:127.0.0.1:8848}
+      discovery:
+        server-addr: ${spring.cloud.nacos.server-addr}
+        namespace: ${NACOS_NAMESPACE:}
+        group: ${NACOS_GROUP:DIARY_GROUP}
+      config:
+        server-addr: ${spring.cloud.nacos.server-addr}
+        namespace: ${NACOS_NAMESPACE:}
+        group: ${NACOS_GROUP:DIARY_GROUP}
+        file-extension: yaml
+    sentinel:
+      transport:
+        dashboard: ${SENTINEL_DASHBOARD:127.0.0.1:8080}
 
 server:
   port: ${SERVER_PORT:48081}
@@ -10,3 +49,16 @@ management:
     web:
       exposure:
         include: health,info,metrics
+
+mybatis-plus:
+  type-aliases-package: ${diary.info.base-package}.module.*.dal.dataobject
+
+diary:
+  info:
+    version: 1.0.0
+    base-package: com.xiaoyang.diary
+  jwt:
+    issuer: ${JWT_ISSUER:diary}
+    secret: ${JWT_SECRET:diary-local-development-secret-change-me}
+    access-token-seconds: ${JWT_ACCESS_TOKEN_SECONDS:7200}
+    refresh-token-seconds: ${JWT_REFRESH_TOKEN_SECONDS:2592000}

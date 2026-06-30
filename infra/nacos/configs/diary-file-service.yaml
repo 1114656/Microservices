@@ -1,0 +1,38 @@
+server:
+  port: ${SERVER_PORT:48082}
+
+spring:
+  datasource:
+    dynamic:
+      primary: master
+      datasource:
+        master:
+          url: jdbc:mysql://${MYSQL_HOST:mysql}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:diary_file}?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true
+          username: ${MYSQL_USERNAME:diary_file}
+          password: ${MYSQL_PASSWORD:diary_file_pwd}
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+      database: ${REDIS_DATABASE:3}
+      password: ${REDIS_PASSWORD:diary_redis_pwd}
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  cloud:
+    sentinel:
+      transport:
+        dashboard: ${SENTINEL_DASHBOARD:sentinel:8858}
+
+diary:
+  file:
+    s3:
+      endpoint: ${MINIO_ENDPOINT:http://minio:9000}
+      access-key: ${MINIO_ACCESS_KEY:diary_minio}
+      secret-key: ${MINIO_SECRET_KEY:diary_minio_pwd}
+      bucket: ${MINIO_BUCKET:diary-file}
+      region: us-east-1
+      path-style-access-enabled: true
+      preview-url-expire: 30m
+

@@ -2,8 +2,32 @@ spring:
   application:
     name: diary-gateway
   profiles:
-    active: local
+    active: ${SPRING_PROFILES_ACTIVE:local}
+  config:
+    import:
+      - optional:nacos:diary-common.yaml?group=${NACOS_GROUP:DIARY_GROUP}
+      - optional:nacos:${spring.application.name}.yaml?group=${NACOS_GROUP:DIARY_GROUP}
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
+      database: ${REDIS_DATABASE:3}
+      password: ${REDIS_PASSWORD:}
   cloud:
+    nacos:
+      server-addr: ${NACOS_ADDR:127.0.0.1:8848}
+      discovery:
+        server-addr: ${spring.cloud.nacos.server-addr}
+        namespace: ${NACOS_NAMESPACE:}
+        group: ${NACOS_GROUP:DIARY_GROUP}
+      config:
+        server-addr: ${spring.cloud.nacos.server-addr}
+        namespace: ${NACOS_NAMESPACE:}
+        group: ${NACOS_GROUP:DIARY_GROUP}
+        file-extension: yaml
+    sentinel:
+      transport:
+        dashboard: ${SENTINEL_DASHBOARD:127.0.0.1:8080}
     gateway:
       server:
         webflux:
@@ -30,3 +54,8 @@ management:
     web:
       exposure:
         include: health,info,metrics
+
+diary:
+  jwt:
+    issuer: ${JWT_ISSUER:diary}
+    secret: ${JWT_SECRET:diary-local-development-secret-change-me}

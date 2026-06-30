@@ -114,6 +114,9 @@ services:
     container_name: diary-gateway
     environment:
       NACOS_ADDR: nacos:8848
+      REDIS_HOST: redis
+      REDIS_PASSWORD: diary_redis_pwd
+      JWT_SECRET: diary-compose-secret-change-me
       JAVA_OPTS: "-Xms256m -Xmx512m"
     ports:
       - "48080:48080"
@@ -132,7 +135,12 @@ services:
       SERVER_PORT: 48081
       NACOS_ADDR: nacos:8848
       MYSQL_HOST: mysql
+      MYSQL_DATABASE: diary_system
+      MYSQL_USERNAME: diary_system
+      MYSQL_PASSWORD: diary_system_pwd
       REDIS_HOST: redis
+      REDIS_PASSWORD: diary_redis_pwd
+      JWT_SECRET: diary-compose-secret-change-me
       ROCKETMQ_NAMESRV_ADDR: rocketmq-namesrv:9876
       JAVA_OPTS: "-Xms256m -Xmx512m"
     ports:
@@ -154,9 +162,15 @@ services:
       SERVER_PORT: 48082
       NACOS_ADDR: nacos:8848
       MYSQL_HOST: mysql
+      MYSQL_DATABASE: diary_file
+      MYSQL_USERNAME: diary_file
+      MYSQL_PASSWORD: diary_file_pwd
+      REDIS_HOST: redis
+      REDIS_PASSWORD: diary_redis_pwd
       MINIO_ENDPOINT: http://minio:9000
       MINIO_ACCESS_KEY: diary_minio
       MINIO_SECRET_KEY: diary_minio_pwd
+      JWT_SECRET: diary-compose-secret-change-me
       ROCKETMQ_NAMESRV_ADDR: rocketmq-namesrv:9876
       JAVA_OPTS: "-Xms256m -Xmx512m"
     ports:
@@ -178,6 +192,12 @@ services:
       SERVER_PORT: 48083
       NACOS_ADDR: nacos:8848
       MYSQL_HOST: mysql
+      MYSQL_DATABASE: diary_diary
+      MYSQL_USERNAME: diary_diary
+      MYSQL_PASSWORD: diary_diary_pwd
+      REDIS_HOST: redis
+      REDIS_PASSWORD: diary_redis_pwd
+      JWT_SECRET: diary-compose-secret-change-me
       ROCKETMQ_NAMESRV_ADDR: rocketmq-namesrv:9876
       JAVA_OPTS: "-Xms256m -Xmx512m"
     ports:
@@ -198,6 +218,12 @@ services:
       SERVER_PORT: 48084
       NACOS_ADDR: nacos:8848
       MYSQL_HOST: mysql
+      MYSQL_DATABASE: diary_blog
+      MYSQL_USERNAME: diary_blog
+      MYSQL_PASSWORD: diary_blog_pwd
+      REDIS_HOST: redis
+      REDIS_PASSWORD: diary_redis_pwd
+      JWT_SECRET: diary-compose-secret-change-me
       ROCKETMQ_NAMESRV_ADDR: rocketmq-namesrv:9876
       JAVA_OPTS: "-Xms256m -Xmx512m"
     ports:

@@ -1,0 +1,53 @@
+spring:
+  jackson:
+    serialization:
+      write-dates-as-timestamps: true
+      write-date-timestamps-as-nanoseconds: false
+      write-durations-as-timestamps: true
+      fail-on-empty-beans: false
+  cache:
+    type: REDIS
+    redis:
+      time-to-live: 1h
+  data:
+    redis:
+      repositories:
+        enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: NONE
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+    banner: true
+  type-aliases-package: ${diary.info.base-package}.module.*.dal.dataobject
+  encryptor:
+    password: ${MYBATIS_ENCRYPTOR_PASSWORD:diary-local-encryptor}
+
+diary:
+  info:
+    version: 1.0.0
+    base-package: com.xiaoyang.diary
+  jwt:
+    issuer: ${JWT_ISSUER:diary}
+    secret: ${JWT_SECRET:diary-local-development-secret-change-me}
+    access-token-seconds: ${JWT_ACCESS_TOKEN_SECONDS:7200}
+    refresh-token-seconds: ${JWT_REFRESH_TOKEN_SECONDS:2592000}
+  security:
+    mock-enable: ${SECURITY_MOCK_ENABLE:false}
+    permit-all-urls: []
+  api-encrypt:
+    enable: ${API_ENCRYPT_ENABLE:true}
+    algorithm: AES
+    request-key: ${API_ENCRYPT_REQUEST_KEY:local-key}
+    response-key: ${API_ENCRYPT_RESPONSE_KEY:local-key}
+
