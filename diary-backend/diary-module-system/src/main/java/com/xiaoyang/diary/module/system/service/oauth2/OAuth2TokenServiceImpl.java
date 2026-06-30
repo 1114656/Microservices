@@ -2,11 +2,12 @@ package com.xiaoyang.diary.module.system.service.oauth2;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
-import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import com.xiaoyang.diary.framework.common.enums.UserTypeEnum;
 import com.xiaoyang.diary.framework.common.exception.ServiceException;
 import com.xiaoyang.diary.framework.common.exception.enums.GlobalErrorCodeConstants;
+import com.xiaoyang.diary.framework.common.jwt.JwtTokenUtils;
+import com.xiaoyang.diary.framework.common.jwt.JwtUserClaims;
 import com.xiaoyang.diary.framework.common.util.date.DateUtils;
 import com.xiaoyang.diary.framework.common.util.object.BeanUtils;
 import com.xiaoyang.diary.framework.security.core.LoginUser;
@@ -19,6 +20,7 @@ import com.xiaoyang.diary.module.system.dal.redis.oauth2.OAuth2AccessTokenRedisD
 import com.xiaoyang.diary.module.system.service.user.AdminUserService;
 import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +38,16 @@ public class OAuth2TokenServiceImpl implements OAuth2TokenService {
 
     private static final long ACCESS_TOKEN_SECONDS = Duration.ofHours(2).toSeconds();
     private static final long REFRESH_TOKEN_SECONDS = Duration.ofDays(30).toSeconds();
+    private static final String USER_INFO_KEY_USERNAME = "username";
+
+    @Value("${diary.jwt.issuer:diary}")
+    private String jwtIssuer;
+    @Value("${diary.jwt.secret:diary-local-development-secret-change-me}")
+    private String jwtSecret;
+    @Value("${diary.jwt.access-token-seconds:7200}")
+    private long accessTokenSeconds;
+    @Value("${diary.jwt.refresh-token-seconds:2592000}")
+    private long refreshTokenSeconds;
 
     @Resource
     private OAuth2AccessTokenMapper oauth2AccessTokenMapper;
@@ -65,6 +77,7 @@ public class OAuth2TokenServiceImpl implements OAuth2TokenService {
         if (CollUtil.isNotEmpty(accessTokenDOs)) {
             oauth2AccessTokenMapper.deleteByIds(convertSet(accessTokenDOs, OAuth2AccessTokenDO::getId));
             oauth2AccessTokenRedisDAO.deleteList(convertSet(accessTokenDOs, OAuth2AccessTokenDO::getAccessToken));
+            oauth2AccessTokenRedisDAO.blacklistList(accessTokenDOs);
         }
         if (DateUtils.isExpired(refreshTokenDO.getExpiresTime())) {
             oauth2RefreshTokenMapper.deleteById(refreshTokenDO.getId());
@@ -75,19 +88,14 @@ public class OAuth2TokenServiceImpl implements OAuth2TokenService {
 
     @Override
     public OAuth2AccessTokenDO getAccessToken(String accessToken) {
+        if (oauth2AccessTokenRedisDAO.isBlacklisted(accessToken)) {
+            return null;
+        }
         OAuth2AccessTokenDO accessTokenDO = oauth2AccessTokenRedisDAO.get(accessToken);
         if (accessTokenDO != null) {
             return accessTokenDO;
         }
         accessTokenDO = oauth2AccessTokenMapper.selectByAccessToken(accessToken);
-        if (accessTokenDO == null) {
-            OAuth2RefreshTokenDO refreshTokenDO = oauth2RefreshTokenMapper.selectByRefreshToken(accessToken);
-            if (refreshTokenDO != null && !DateUtils.isExpired(refreshTokenDO.getExpiresTime())) {
-                accessTokenDO = BeanUtils.toBean(refreshTokenDO, OAuth2AccessTokenDO.class)
-                        .setAccessToken(refreshTokenDO.getRefreshToken())
-                        .setUserInfo(buildUserInfo(refreshTokenDO.getUserId(), refreshTokenDO.getUserType()));
-            }
-        }
         if (accessTokenDO != null && !DateUtils.isExpired(accessTokenDO.getExpiresTime())) {
             oauth2AccessTokenRedisDAO.set(accessTokenDO);
         }
@@ -115,6 +123,7 @@ public class OAuth2TokenServiceImpl implements OAuth2TokenService {
         }
         oauth2AccessTokenMapper.deleteById(accessTokenDO.getId());
         oauth2AccessTokenRedisDAO.delete(accessToken);
+        oauth2AccessTokenRedisDAO.blacklist(accessToken, accessTokenDO.getExpiresTime());
         oauth2RefreshTokenMapper.deleteByRefreshToken(accessTokenDO.getRefreshToken());
         return accessTokenDO;
     }
@@ -128,17 +137,21 @@ public class OAuth2TokenServiceImpl implements OAuth2TokenService {
         accessTokens.forEach(accessToken -> {
             oauth2AccessTokenMapper.deleteById(accessToken.getId());
             oauth2AccessTokenRedisDAO.delete(accessToken.getAccessToken());
+            oauth2AccessTokenRedisDAO.blacklist(accessToken.getAccessToken(), accessToken.getExpiresTime());
             oauth2RefreshTokenMapper.deleteByRefreshToken(accessToken.getRefreshToken());
         });
     }
 
     private OAuth2AccessTokenDO createAccessToken(OAuth2RefreshTokenDO refreshTokenDO) {
-        OAuth2AccessTokenDO accessTokenDO = new OAuth2AccessTokenDO().setAccessToken(generateAccessToken())
+        LocalDateTime expiresTime = LocalDateTime.now().plusSeconds(accessTokenSeconds).withNano(0);
+        Map<String, String> userInfo = buildUserInfo(refreshTokenDO.getUserId(), refreshTokenDO.getUserType());
+        String accessToken = generateAccessToken(refreshTokenDO, userInfo, expiresTime);
+        OAuth2AccessTokenDO accessTokenDO = new OAuth2AccessTokenDO().setAccessToken(accessToken)
                 .setUserId(refreshTokenDO.getUserId()).setUserType(refreshTokenDO.getUserType())
-                .setUserInfo(buildUserInfo(refreshTokenDO.getUserId(), refreshTokenDO.getUserType()))
+                .setUserInfo(userInfo)
                 .setClientId(refreshTokenDO.getClientId()).setScopes(refreshTokenDO.getScopes())
                 .setRefreshToken(refreshTokenDO.getRefreshToken())
-                .setExpiresTime(LocalDateTime.now().plusSeconds(ACCESS_TOKEN_SECONDS));
+                .setExpiresTime(expiresTime);
         oauth2AccessTokenMapper.insert(accessTokenDO);
         oauth2AccessTokenRedisDAO.set(accessTokenDO);
         return accessTokenDO;
@@ -148,7 +161,7 @@ public class OAuth2TokenServiceImpl implements OAuth2TokenService {
         OAuth2RefreshTokenDO refreshToken = new OAuth2RefreshTokenDO().setRefreshToken(generateRefreshToken())
                 .setUserId(userId).setUserType(userType)
                 .setClientId(clientId).setScopes(scopes)
-                .setExpiresTime(LocalDateTime.now().plusSeconds(REFRESH_TOKEN_SECONDS));
+                .setExpiresTime(LocalDateTime.now().plusSeconds(refreshTokenSeconds).withNano(0));
         oauth2RefreshTokenMapper.insert(refreshToken);
         return refreshToken;
     }
@@ -159,17 +172,26 @@ public class OAuth2TokenServiceImpl implements OAuth2TokenService {
         }
         if (userType.equals(UserTypeEnum.ADMIN.getValue())) {
             AdminUserDO user = adminUserService.getUser(userId);
-            return MapUtil.builder(LoginUser.INFO_KEY_NICKNAME, user.getNickname()).build();
+            return MapUtil.builder(LoginUser.INFO_KEY_NICKNAME, user.getNickname())
+                    .put(USER_INFO_KEY_USERNAME, user.getUsername())
+                    .build();
         }
         return Collections.emptyMap();
     }
 
-    private static String generateAccessToken() {
-        return IdUtil.fastSimpleUUID();
+    private String generateAccessToken(OAuth2RefreshTokenDO refreshTokenDO, Map<String, String> userInfo,
+                                       LocalDateTime expiresTime) {
+        return JwtTokenUtils.createToken(jwtIssuer, jwtSecret, JwtUserClaims.builder()
+                .userId(refreshTokenDO.getUserId())
+                .userType(refreshTokenDO.getUserType())
+                .userInfo(userInfo)
+                .scopes(refreshTokenDO.getScopes())
+                .expiresTime(expiresTime)
+                .build());
     }
 
     private static String generateRefreshToken() {
-        return IdUtil.fastSimpleUUID();
+        return java.util.UUID.randomUUID().toString().replace("-", "");
     }
 
 }

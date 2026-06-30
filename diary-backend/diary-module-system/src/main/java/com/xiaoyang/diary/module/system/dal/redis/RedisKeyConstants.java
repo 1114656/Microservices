@@ -22,4 +22,6 @@ public interface RedisKeyConstants {
      */
     String OAUTH2_ACCESS_TOKEN = "oauth2_access_token:%s";
 
+    String JWT_ACCESS_TOKEN_BLACKLIST = "jwt:blacklist:%s";
+
 }

@@ -246,6 +246,7 @@
 | 2026-06-30 | 第一阶段 | 加入 Gateway 骨架和 traceId 过滤器 | `mvn "-Dmaven.repo.local=..\.m2\repository" -pl diary-gateway -am test` 通过，2 个测试通过 | Gateway 已具备 Nacos/Gateway/Sentinel/JWT 依赖和标准路由配置 |
 | 2026-06-30 | 第一阶段 | 拆出四个业务服务启动入口 | `mvn "-Dmaven.repo.local=..\.m2\repository" -pl diary-module-system,diary-module-file,diary-module-diary,diary-module-blog -am test -DskipTests` 通过 | system/file/diary/blog 已具备独立 Spring Boot 启动类、服务名和端口配置 |
 | 2026-06-30 | 第一阶段 | 加入 Docker Compose 编排骨架 | 当前环境缺少 Docker 与 YAML 解析器，未能运行 `docker compose config` | 已加入 MySQL、Redis、MinIO、Nacos、Sentinel、RocketMQ、Gateway 和业务服务容器定义，后续需在 Docker 环境复验 |
+| 2026-06-30 | 第一阶段 | 接入标准 JWT 签发、刷新黑名单和 Gateway 验签透传 | `mvn "-Dmaven.repo.local=..\.m2\repository" -pl diary-framework/diary-common test` 通过，`mvn "-Dmaven.repo.local=..\.m2\repository" -pl diary-gateway -am test` 通过，`mvn "-Dmaven.repo.local=..\.m2\repository" -pl diary-module-system -am test -DskipTests` 通过 | access token 改为 JWT；刷新/登出会写入 Redis 黑名单；Gateway 校验 JWT 并透传 `X-User-Id`、`X-User-Type`、`X-Username`、`X-Roles` |
 
 ## 后续推进规则
 

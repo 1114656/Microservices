@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static com.xiaoyang.diary.module.system.dal.redis.RedisKeyConstants.OAUTH2_ACCESS_TOKEN;
+import static com.xiaoyang.diary.module.system.dal.redis.RedisKeyConstants.JWT_ACCESS_TOKEN_BLACKLIST;
 
 /**
  * {@link OAuth2AccessTokenDO} 的 RedisDAO
@@ -52,8 +53,30 @@ public class OAuth2AccessTokenRedisDAO {
         stringRedisTemplate.delete(redisKeys);
     }
 
+    public boolean isBlacklisted(String accessToken) {
+        return Boolean.TRUE.equals(stringRedisTemplate.hasKey(formatBlacklistKey(accessToken)));
+    }
+
+    public void blacklist(String accessToken, LocalDateTime expiresTime) {
+        long time = LocalDateTimeUtil.between(LocalDateTime.now(), expiresTime, ChronoUnit.SECONDS);
+        if (time > 0) {
+            stringRedisTemplate.opsForValue().set(formatBlacklistKey(accessToken), "1", time, TimeUnit.SECONDS);
+        }
+    }
+
+    public void blacklistList(Collection<OAuth2AccessTokenDO> accessTokens) {
+        if (accessTokens == null) {
+            return;
+        }
+        accessTokens.forEach(accessToken -> blacklist(accessToken.getAccessToken(), accessToken.getExpiresTime()));
+    }
+
     private static String formatKey(String accessToken) {
         return String.format(OAUTH2_ACCESS_TOKEN, accessToken);
+    }
+
+    private static String formatBlacklistKey(String accessToken) {
+        return String.format(JWT_ACCESS_TOKEN_BLACKLIST, accessToken);
     }
 
 }
