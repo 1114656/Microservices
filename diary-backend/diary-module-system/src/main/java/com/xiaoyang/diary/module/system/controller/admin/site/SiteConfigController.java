@@ -21,7 +21,7 @@ import static com.xiaoyang.diary.framework.common.pojo.CommonResult.success;
 
 @Tag(name = "Admin - Site config")
 @RestController
-@RequestMapping("/site/config")
+@RequestMapping("/admin-api/system/site/config")
 @Validated
 public class SiteConfigController {
 

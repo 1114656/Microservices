@@ -248,6 +248,7 @@
 | 2026-06-30 | 第一阶段 | 加入 Docker Compose 编排骨架 | 当前环境缺少 Docker 与 YAML 解析器，未能运行 `docker compose config` | 已加入 MySQL、Redis、MinIO、Nacos、Sentinel、RocketMQ、Gateway 和业务服务容器定义，后续需在 Docker 环境复验 |
 | 2026-06-30 | 第一阶段 | 接入标准 JWT 签发、刷新黑名单和 Gateway 验签透传 | `mvn "-Dmaven.repo.local=..\.m2\repository" -pl diary-framework/diary-common test` 通过，`mvn "-Dmaven.repo.local=..\.m2\repository" -pl diary-gateway -am test` 通过，`mvn "-Dmaven.repo.local=..\.m2\repository" -pl diary-module-system -am test -DskipTests` 通过 | access token 改为 JWT；刷新/登出会写入 Redis 黑名单；Gateway 校验 JWT 并透传 `X-User-Id`、`X-User-Type`、`X-Username`、`X-Roles` |
 | 2026-06-30 | 第一阶段 | 落地 Nacos 配置中心样例和独立数据库配置 | `mvn "-Dmaven.repo.local=..\.m2\repository" -pl diary-gateway,diary-module-system,diary-module-file,diary-module-diary,diary-module-blog -am test -DskipTests` 通过 | 每个服务已接入 `optional:nacos:` 配置导入；`infra/nacos/configs` 提供可导入的配置中心 Data ID；Compose 环境变量按 system/file/diary/blog 独立数据库拆分 |
+| 2026-06-30 | 第一阶段 | 标准化后端 Controller 与前端 API 路径 | `mvn "-Dmaven.repo.local=..\.m2\repository" -pl diary-gateway,diary-module-system,diary-module-file,diary-module-diary,diary-module-blog -am test -DskipTests` 通过，`.\node_modules\.bin\vue-tsc.cmd --noEmit` 通过 | 后端统一暴露 `/admin-api/{service}/**`，前端 `src/api` 和刷新 token 链路已同步到 Gateway 标准入口 |
 
 ## 后续推进规则
 

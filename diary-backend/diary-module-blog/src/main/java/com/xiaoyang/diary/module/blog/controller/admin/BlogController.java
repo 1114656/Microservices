@@ -32,7 +32,7 @@ import static com.xiaoyang.diary.framework.security.core.util.SecurityFrameworkU
 
 @Tag(name = "Admin - Blog")
 @RestController
-@RequestMapping("/blog")
+@RequestMapping("/admin-api/blog")
 @Validated
 public class BlogController {
 

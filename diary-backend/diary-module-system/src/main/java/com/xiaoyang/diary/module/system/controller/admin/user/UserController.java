@@ -35,7 +35,7 @@ import static com.xiaoyang.diary.framework.common.pojo.CommonResult.success;
 
 @Tag(name = "管理后台 - 用户")
 @RestController
-@RequestMapping("/system/user")
+@RequestMapping("/admin-api/system/user")
 @Validated
 public class UserController {
 

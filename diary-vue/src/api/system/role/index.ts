@@ -12,29 +12,29 @@ export interface RoleVO {
 }
 
 export const getRolePage = async (params: PageParam) => {
-  return await request.get({ url: '/system/role/page', params })
+  return await request.get({ url: '/admin-api/system/role/page', params })
 }
 
 export const getSimpleRoleList = async (): Promise<RoleVO[]> => {
-  return await request.get({ url: '/system/role/simple-list' })
+  return await request.get({ url: '/admin-api/system/role/simple-list' })
 }
 
 export const getRole = async (id: number) => {
-  return await request.get({ url: '/system/role/get?id=' + id })
+  return await request.get({ url: '/admin-api/system/role/get?id=' + id })
 }
 
 export const createRole = async (data: RoleVO) => {
-  return await request.post({ url: '/system/role/create', data })
+  return await request.post({ url: '/admin-api/system/role/create', data })
 }
 
 export const updateRole = async (data: RoleVO) => {
-  return await request.put({ url: '/system/role/update', data })
+  return await request.put({ url: '/admin-api/system/role/update', data })
 }
 
 export const deleteRole = async (id: number) => {
-  return await request.delete({ url: '/system/role/delete?id=' + id })
+  return await request.delete({ url: '/admin-api/system/role/delete?id=' + id })
 }
 
 export const deleteRoleList = async (ids: number[]) => {
-  return await request.delete({ url: '/system/role/delete-list', params: { ids: ids.join(',') } })
+  return await request.delete({ url: '/admin-api/system/role/delete-list', params: { ids: ids.join(',') } })
 }

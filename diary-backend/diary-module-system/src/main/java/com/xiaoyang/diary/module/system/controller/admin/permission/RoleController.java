@@ -33,7 +33,7 @@ import static java.util.Collections.singleton;
 
 @Tag(name = "管理后台 - 角色")
 @RestController
-@RequestMapping("/system/role")
+@RequestMapping("/admin-api/system/role")
 @Validated
 public class RoleController {
 

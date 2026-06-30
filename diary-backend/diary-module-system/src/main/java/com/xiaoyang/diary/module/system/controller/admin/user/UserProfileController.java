@@ -28,7 +28,7 @@ import static com.xiaoyang.diary.framework.security.core.util.SecurityFrameworkU
 
 @Tag(name = "管理后台 - 用户个人中心")
 @RestController
-@RequestMapping("/system/user/profile")
+@RequestMapping("/admin-api/system/user/profile")
 @Validated
 public class UserProfileController {
 

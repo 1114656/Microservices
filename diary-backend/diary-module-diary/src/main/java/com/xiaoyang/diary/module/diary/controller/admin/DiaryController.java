@@ -34,7 +34,7 @@ import static com.xiaoyang.diary.framework.security.core.util.SecurityFrameworkU
 
 @Tag(name = "管理后台 - 日记")
 @RestController
-@RequestMapping("/diary")
+@RequestMapping("/admin-api/diary")
 @Validated
 public class DiaryController {
 

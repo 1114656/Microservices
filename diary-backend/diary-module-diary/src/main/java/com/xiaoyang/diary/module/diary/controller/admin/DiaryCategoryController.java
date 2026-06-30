@@ -28,7 +28,7 @@ import static com.xiaoyang.diary.framework.security.core.util.SecurityFrameworkU
 
 @Tag(name = "Admin - Diary category")
 @RestController
-@RequestMapping("/diary/category")
+@RequestMapping("/admin-api/diary/category")
 @Validated
 public class DiaryCategoryController {
 

@@ -25,7 +25,7 @@ import static com.xiaoyang.diary.framework.common.pojo.CommonResult.success;
 
 @Tag(name = "管理后台 - 菜单")
 @RestController
-@RequestMapping("/system/menu")
+@RequestMapping("/admin-api/system/menu")
 @Validated
 public class MenuController {
 

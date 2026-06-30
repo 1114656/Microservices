@@ -11,17 +11,17 @@ export interface PermissionAssignRoleMenuReqVO {
 }
 
 export const getRoleMenuList = async (roleId: number) => {
-  return await request.get({ url: '/system/permission/list-role-menus?roleId=' + roleId })
+  return await request.get({ url: '/admin-api/system/permission/list-role-menus?roleId=' + roleId })
 }
 
 export const assignRoleMenu = async (data: PermissionAssignRoleMenuReqVO) => {
-  return await request.post({ url: '/system/permission/assign-role-menu', data })
+  return await request.post({ url: '/admin-api/system/permission/assign-role-menu', data })
 }
 
 export const getUserRoleList = async (userId: number) => {
-  return await request.get({ url: '/system/permission/list-user-roles?userId=' + userId })
+  return await request.get({ url: '/admin-api/system/permission/list-user-roles?userId=' + userId })
 }
 
 export const assignUserRole = async (data: PermissionAssignUserRoleReqVO) => {
-  return await request.post({ url: '/system/permission/assign-user-role', data })
+  return await request.post({ url: '/admin-api/system/permission/assign-user-role', data })
 }

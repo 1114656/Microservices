@@ -45,7 +45,7 @@ import static com.xiaoyang.diary.framework.security.core.util.SecurityFrameworkU
 
 @Tag(name = "管理后台 - 认证")
 @RestController
-@RequestMapping("/system/auth")
+@RequestMapping("/admin-api/system/auth")
 @Validated
 public class AuthController {
 

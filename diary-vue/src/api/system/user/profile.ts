@@ -27,16 +27,16 @@ export interface UserProfileUpdateReqVO {
 }
 
 export const getUserProfile = () => {
-  return request.get({ url: '/system/user/profile/get' })
+  return request.get({ url: '/admin-api/system/user/profile/get' })
 }
 
 export const updateUserProfile = (data: UserProfileUpdateReqVO) => {
-  return request.put({ url: '/system/user/profile/update', data })
+  return request.put({ url: '/admin-api/system/user/profile/update', data })
 }
 
 export const updateUserPassword = (oldPassword: string, newPassword: string) => {
   return request.put({
-    url: '/system/user/profile/update-password',
+    url: '/admin-api/system/user/profile/update-password',
     data: {
       oldPassword,
       newPassword

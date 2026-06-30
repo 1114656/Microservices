@@ -9,13 +9,13 @@ export interface SiteConfigVO {
 }
 
 export const getPublicSiteConfig = () => {
-  return request.get<SiteConfigVO>({ url: '/site/config/public', headers: { isToken: false } })
+  return request.get<SiteConfigVO>({ url: '/admin-api/system/site/config/public', headers: { isToken: false } })
 }
 
 export const getSiteConfig = () => {
-  return request.get<SiteConfigVO>({ url: '/site/config/get' })
+  return request.get<SiteConfigVO>({ url: '/admin-api/system/site/config/get' })
 }
 
 export const updateSiteConfig = (data: SiteConfigVO) => {
-  return request.put({ url: '/site/config/update', data })
+  return request.put({ url: '/admin-api/system/site/config/update', data })
 }

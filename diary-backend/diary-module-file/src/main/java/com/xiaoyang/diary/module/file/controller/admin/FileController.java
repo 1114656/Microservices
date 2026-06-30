@@ -31,7 +31,7 @@ import static com.xiaoyang.diary.framework.security.core.util.SecurityFrameworkU
 
 @Tag(name = "管理后台 - 文件")
 @RestController
-@RequestMapping("/file")
+@RequestMapping("/admin-api/file")
 @Validated
 public class FileController {
 

@@ -13,21 +13,21 @@ export interface DiaryCategoryVO {
 }
 
 export const getDiaryCategoryList = () => {
-  return request.get({ url: '/diary/category/list' })
+  return request.get({ url: '/admin-api/diary/category/list' })
 }
 
 export const getDiaryCategory = (id: number) => {
-  return request.get({ url: '/diary/category/get?id=' + id })
+  return request.get({ url: '/admin-api/diary/category/get?id=' + id })
 }
 
 export const createDiaryCategory = (data: DiaryCategoryVO) => {
-  return request.post({ url: '/diary/category/create', data })
+  return request.post({ url: '/admin-api/diary/category/create', data })
 }
 
 export const updateDiaryCategory = (data: DiaryCategoryVO) => {
-  return request.put({ url: '/diary/category/update', data })
+  return request.put({ url: '/admin-api/diary/category/update', data })
 }
 
 export const deleteDiaryCategory = (id: number) => {
-  return request.delete({ url: '/diary/category/delete?id=' + id })
+  return request.delete({ url: '/admin-api/diary/category/delete?id=' + id })
 }

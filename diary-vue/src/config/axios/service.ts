@@ -170,7 +170,7 @@ service.interceptors.response.use(
 )
 
 const refreshToken = async () => {
-  return await axios.post(base_url + '/system/auth/refresh-token?refreshToken=' + getRefreshToken())
+  return await axios.post(base_url + '/admin-api/system/auth/refresh-token?refreshToken=' + getRefreshToken())
 }
 
 const handleAuthorized = () => {

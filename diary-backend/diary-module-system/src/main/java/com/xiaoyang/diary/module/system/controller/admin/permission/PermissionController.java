@@ -23,7 +23,7 @@ import static com.xiaoyang.diary.framework.common.pojo.CommonResult.success;
 
 @Tag(name = "管理后台 - 权限")
 @RestController
-@RequestMapping("/system/permission")
+@RequestMapping("/admin-api/system/permission")
 public class PermissionController {
 
     @Resource
