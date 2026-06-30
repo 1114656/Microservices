@@ -1,0 +1,6 @@
+com.xiaoyang.diary.framework.jackson.config.DiaryJacksonAutoConfiguration
+com.xiaoyang.diary.framework.swagger.config.DiarySwaggerAutoConfiguration
+com.xiaoyang.diary.framework.web.config.DiaryWebAutoConfiguration
+com.xiaoyang.diary.framework.xss.config.DiaryXssAutoConfiguration
+com.xiaoyang.diary.framework.banner.config.DiaryBannerAutoConfiguration
+com.xiaoyang.diary.framework.encrypt.config.DiaryApiEncryptAutoConfiguration

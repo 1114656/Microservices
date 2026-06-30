@@ -1,0 +1,3 @@
+com.xiaoyang.diary.framework.datasource.config.DiaryDataSourceAutoConfiguration
+com.xiaoyang.diary.framework.mybatis.config.DiaryMybatisAutoConfiguration
+com.xiaoyang.diary.framework.translate.config.DiaryTranslateAutoConfiguration

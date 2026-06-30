@@ -1,0 +1,4 @@
+com.xiaoyang.diary.framework.idempotent.config.DiaryIdempotentConfiguration
+com.xiaoyang.diary.framework.lock4j.config.DiaryLock4jConfiguration
+com.xiaoyang.diary.framework.ratelimiter.config.DiaryRateLimiterConfiguration
+com.xiaoyang.diary.framework.signature.config.DiaryApiSignatureAutoConfiguration

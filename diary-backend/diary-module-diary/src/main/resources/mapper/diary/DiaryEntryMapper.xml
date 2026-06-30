@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xiaoyang.diary.module.diary.dal.mysql.DiaryEntryMapper">
+    <select id="selectCategoryStatusCounts"
+            resultType="com.xiaoyang.diary.module.diary.dal.mysql.DiaryEntryMapper$CategoryStatusCount">
+        SELECT category_id AS categoryId, status, COUNT(*) AS count
+        FROM diary_entry
+        WHERE deleted = b'0'
+          AND owner_user_id = #{ownerUserId}
+          AND category_id IN
+          <foreach collection="categoryIds" item="categoryId" open="(" separator="," close=")">
+              #{categoryId}
+          </foreach>
+        GROUP BY category_id, status
+    </select>
+</mapper>

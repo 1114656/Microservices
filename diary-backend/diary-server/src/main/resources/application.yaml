@@ -1,0 +1,105 @@
+spring:
+  application:
+    name: Diary-server
+  profiles:
+    active: local
+  main:
+    banner-mode: console
+    allow-circular-references: true
+  jackson:
+    serialization:
+      write-dates-as-timestamps: true
+      write-date-timestamps-as-nanoseconds: false
+      write-durations-as-timestamps: true
+      fail-on-empty-beans: false
+  cache:
+    type: REDIS
+    redis:
+      time-to-live: 1h
+  data:
+    redis:
+      repositories:
+        enabled: false
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+server:
+  servlet:
+    encoding:
+      enabled: true
+      charset: UTF-8
+      force: true
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui
+  default-flat-param-object: true
+
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: NONE
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+    banner: true
+  type-aliases-package: ${diary.info.base-package}.module.*.dal.dataobject
+  encryptor:
+    password: XDV71a+xqStEA3WH
+
+mybatis-plus-join:
+  banner: true
+  sub-table-logic: true
+  ms-cache: true
+  table-alias: t
+  logic-del-type: true
+
+easy-trans:
+  is-enable-global: false
+
+diary:
+  info:
+    version: 1.0.0
+    base-package: com.xiaoyang.diary
+  web:
+    admin-ui:
+      url: http://localhost
+  xss:
+    enable: false
+    exclude-urls: []
+  security:
+    permit-all_urls: []
+  api-encrypt:
+    enable: true
+    algorithm: AES
+    request-key: local-key
+    response-key: local-key
+  swagger:
+    title: Diary
+    description: Diary 后台管理系统
+    version: ${diary.info.version}
+    url: ${diary.web.admin-ui.url}
+    email: admin@localhost
+    license: MIT
+    license-url: http://localhost/LICENSE
+
+  file:
+    s3:
+      bucket: diary-file
+      region: us-east-1
+      path-style-access-enabled: true
+      preview-url-expire: 30m
+
+debug: false

@@ -1,0 +1,2 @@
+com.xiaoyang.diary.framework.security.config.DiarySecurityAutoConfiguration
+com.xiaoyang.diary.framework.security.config.DiaryWebSecurityConfigurerAdapter

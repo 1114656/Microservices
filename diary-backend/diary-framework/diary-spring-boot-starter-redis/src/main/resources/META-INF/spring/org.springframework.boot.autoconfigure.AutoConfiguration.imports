@@ -1,0 +1,2 @@
+com.xiaoyang.diary.framework.redis.config.DiaryRedisAutoConfiguration
+com.xiaoyang.diary.framework.redis.config.DiaryCacheAutoConfiguration

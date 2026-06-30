@@ -1,0 +1,35 @@
+package com.xiaoyang.diary.module.system.dal.dataobject.oauth2;
+
+import com.baomidou.mybatisplus.annotation.KeySequence;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import com.xiaoyang.diary.framework.common.enums.UserTypeEnum;
+import com.xiaoyang.diary.framework.mybatis.core.dataobject.BaseDO;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@TableName(value = "system_oauth2_refresh_token", autoResultMap = true)
+@KeySequence("system_oauth2_access_token_seq")
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class OAuth2RefreshTokenDO extends BaseDO {
+
+    @TableId
+    private Long id;
+    private String refreshToken;
+    private Long userId;
+    /**
+     * @see UserTypeEnum
+     */
+    private Integer userType;
+    private String clientId;
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private List<String> scopes;
+    private LocalDateTime expiresTime;
+
+}
