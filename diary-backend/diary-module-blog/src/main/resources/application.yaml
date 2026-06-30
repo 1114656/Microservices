@@ -40,6 +40,21 @@ spring:
     sentinel:
       transport:
         dashboard: ${SENTINEL_DASHBOARD:127.0.0.1:8080}
+      datasource:
+        flow:
+          file:
+            file: classpath:sentinel/flow-rules.json
+            data-type: json
+            rule-type: flow
+        degrade:
+          file:
+            file: classpath:sentinel/degrade-rules.json
+            data-type: json
+            rule-type: degrade
+
+feign:
+  sentinel:
+    enabled: ${FEIGN_SENTINEL_ENABLED:true}
 
 server:
   port: ${SERVER_PORT:48084}

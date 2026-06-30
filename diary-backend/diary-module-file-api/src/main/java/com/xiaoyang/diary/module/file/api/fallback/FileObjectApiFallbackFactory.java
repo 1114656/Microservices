@@ -15,7 +15,8 @@ public class FileObjectApiFallbackFactory implements FallbackFactory<FileObjectA
     public FileObjectApi create(Throwable cause) {
         return (id, ownerUserId) -> {
             log.warn("File service fallback triggered, id={}, ownerUserId={}", id, ownerUserId, cause);
-            return CommonResult.error(GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR);
+            return CommonResult.error(GlobalErrorCodeConstants.INTERNAL_SERVER_ERROR.getCode(),
+                    "file-service unavailable, please retry later");
         };
     }
 }

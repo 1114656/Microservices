@@ -1,0 +1,18 @@
+[
+  {
+    "resource": "GET:/admin-api/diary/page",
+    "limitApp": "default",
+    "grade": 1,
+    "count": 50,
+    "strategy": 0,
+    "controlBehavior": 0
+  },
+  {
+    "resource": "POST:/admin-api/diary/create",
+    "limitApp": "default",
+    "grade": 1,
+    "count": 20,
+    "strategy": 0,
+    "controlBehavior": 0
+  }
+]

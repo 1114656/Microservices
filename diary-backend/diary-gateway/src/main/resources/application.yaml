@@ -28,6 +28,11 @@ spring:
     sentinel:
       transport:
         dashboard: ${SENTINEL_DASHBOARD:127.0.0.1:8080}
+      scg:
+        fallback:
+          mode: response
+          response-status: 429
+          response-body: '{"code":429,"data":null,"msg":"gateway sentinel blocked"}'
     gateway:
       server:
         webflux:

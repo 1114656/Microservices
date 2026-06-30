@@ -12,6 +12,11 @@ spring:
     sentinel:
       transport:
         dashboard: ${SENTINEL_DASHBOARD:sentinel:8858}
+      scg:
+        fallback:
+          mode: response
+          response-status: 429
+          response-body: '{"code":429,"data":null,"msg":"gateway sentinel blocked"}'
     gateway:
       server:
         webflux:
@@ -32,4 +37,3 @@ spring:
               uri: lb://diary-blog-service
               predicates:
                 - Path=/admin-api/blog/**
-

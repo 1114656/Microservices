@@ -1,0 +1,18 @@
+[
+  {
+    "resource": "GET:/admin-api/blog/page",
+    "limitApp": "default",
+    "grade": 1,
+    "count": 50,
+    "strategy": 0,
+    "controlBehavior": 0
+  },
+  {
+    "resource": "POST:/admin-api/blog/create",
+    "limitApp": "default",
+    "grade": 1,
+    "count": 20,
+    "strategy": 0,
+    "controlBehavior": 0
+  }
+]
